@@ -108,7 +108,37 @@
   </div>
 </section>
 
-
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+          Visual domain gaps often impact object detection performance. Image-to-image
+          translation can mitigate this effect, where contrastive approaches enable learning of the
+          image-to-image mapping under unsupervised regimes. However, existing methods often
+          fail to handle content-rich scenes with multiple object instances, which manifests in
+          unsatisfactory detection performance. Sensitivity to such instance-level content is typically
+          only gained through object annotations, which can be expensive to obtain. Towards
+          addressing this issue, we present a novel image-to-image translation method that specifically
+          itargets cross-domain object detection. We formulate our approach as a contrastive
+          learning framework with an inductive prior that optimises the appearance of object instances
+          through spatial attention masks, implicitly delineating the scene into foreground
+          regions associated with the target object instances and background non-object regions.
+          Instead of relying on object annotations to explicitly account for object instances during
+          translation, our approach learns to represent objects by contrasting local-global information.
+          This affords investigation of an under-explored challenge: obtaining performant
+          detection, under domain shifts, without relying on object annotations nor detector model
+          fine-tuning. We experiment with multiple cross-domain object detection settings across
+          three challenging benchmarks and report state-of-the-art performance.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End paper abstract -->
 
 
 <section class="section" id="BibTeX">
