@@ -45,6 +45,10 @@
   <script src="static/js/bulma-carousel.min.js"></script>
   <script src="static/js/bulma-slider.min.js"></script>
   <script src="static/js/index.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
 </head>
 
 <body>
@@ -73,6 +77,9 @@
             <span class="author-block"><sup>2</sup>University of Edinburgh</span>
             <span class="author-block"><sup>3</sup>University of Birmingham</span>
           </div>
+            <div class="is-size-4 publication-authors">
+            <span class="author-block", style="color:#346dc2">BMVC 2024</span>
+          </div>
 
           <div class="column has-text-centered">
             <div class="publication-links">
@@ -87,7 +94,7 @@
                 </a>
               </span>
               <span class="link-block">
-                <a href="https://arxiv.org/abs/2410.05058"
+                <a href="https://arxiv.org"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="ai ai-arxiv"></i>
@@ -148,12 +155,87 @@
 </section>
 <!-- End paper abstract -->
 
+<section class="hero is-small">
+        <div class="hero-body">
+            <div class="container ">
+                <h2 class="title is-3">Method overview</h2>
+                <h2 class="title is-5">Model architecture</h2>
+                Our model learns to decompose the input image \( x\) into
+                foreground and background regions. We adopt an encoder-decoder architecture where
+                the encoder \( E_B\) acts as a feature extractor, and generates image representations of lower dimensionality. We decompose our decoder into two components: a content generator \( G_C\) that
+                generates multiple image content maps and an attention generator \( G_A\) that outputs attention masks. The translated image \( G_x\) is recovered as:
+
+                <p>
+                    \[
+                    \begin{equation}
+                    %G(x)=\sum_{t=1}^{n} \underbrace{(C^{t} \odot A^{t})}_\textrm{weighted content}
+                    G(x)=\sum_{t=1}^{n} \underbrace{(C^{t} \odot A^{t})}_\textrm{foreground }
+                    +
+                    \underbrace{(x \odot A^{n+1})}_\textrm{background}.
+                    \label{eq:fb}
+                    \end{equation}
+                    \]
+                </p>
+                <p style="margin-bottom:1cm;">
+                </p>
+                <div style="display: flex; justify-content: center;">
+                    <img id="method_sliding" src="images/overview_camera_ready_2.jpg" width="800">
+                </div>
+
+                <h2 class="title is-5">Local-global contrastive learning</h2>
+
+                <p>Our approach optimises the attention masks and identifies salient object regions by contrasting local-global information:</p>
+                <p>
+                    \[
+                    \begin{equation}
+                    L_{GA}=  L^{NCE}_{g \leftarrow l}  + L^{NCE}_{l \leftarrow l} +  L^{NCE}_{g \leftarrow g}
+                     \end{equation}
+                    \]
+                </p>
+                <p>
+                &nbsp;
+                <ul>
+                  <li>(i) \( L^{NCE}_{g \leftarrow l}\)  encourages  local representations of an image to be closer to the global representation of the same image</li>
+                  <li> (iii) \( L^{NCE}_{g \leftarrow g}\) pulls the global representations of an image’s distinct augmentations close to one another</li>
+                 <li> (ii) \( L^{NCE}_{l \leftarrow l}\) encourages local representations of an image to be close to one another</li>
+
+                </ul>
+
+
+                </p>
+               <!--
+                &nbsp;
+                &nbsp;
+                <p>
+                </p>
+                <p>
+
+                The full optimisation objective can be expressed as follows:
+                <p>
+                    \[
+                    \begin{equation}
+                    L_{G}=L^{NCE} + L_{adv} + L_{GA}
+                     \end{equation}
+                    \]
+                </p>
+                &nbsp;
+                <ul>
+                  <li>(iv) \( L^{NCE}\),  a patchwise contrastive loss which maximizes mutual information between corresponding input and output patches</li>
+                  <li> (v)  \( L_{adv}\), an adversarial loss, ensuring that the translated output matches the appearance of the target domain. </li>
+                </ul>
+                </p>
+                 -->
+
+            </div>
+             -->
+        </div>
+    </section>
 
 <!-- Image carousel -->
 <section class="hero is-small">
     <div class="hero-body">
         <div class="container">
-        <h2 class="title is-3">Attention Maps</h2>
+        <h3 class="title is-3">Attention Maps</h3>
             <div id="results-carousel_COCO" class="carousel results-carousel">
                 <div class="card">
                     <div class="card-image">
@@ -180,6 +262,107 @@
     </div>
 </section>
 <!-- End image carousel -->
+
+<!-- Image carousel -->
+<section class="hero is-small">
+    <div class="hero-body">
+        <div class="container">
+            <h5 class="title is-3"> Synthetic-to-real adaptation</h5>
+
+        <h5 class="title is-5"><a href="https://fcav.engin.umich.edu/projects/driving-in-the-matrix">Sim10k</a> → <a href="https://www.cityscapes-dataset.com/">Cityscapes</a></a></h5>
+            <div id="results-carousel_COCO" class="carousel results-carousel">
+                <div class="card">
+                    <div class="card-image">
+                        <img src="images/s1.jpg" alt="s1" />
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image">
+                        <img src="images/s2.jpg" alt="s2" />
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image">
+                        <img src="images/s3.jpg" alt="s3" />
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image">
+                        <img src="images/s4.jpg" alt="s4" />
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image">
+                        <img src="images/s5.jpg" alt="s4" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End image carousel -->
+
+<!-- Image carousel -->
+<section class="hero is-small">
+    <div class="hero-body">
+        <div class="container">
+            <h3 class="title is-3"> Cross-camera adaptation</h3>
+            <h5 class="title is-5"><a href="https://www.cvlibs.net/datasets/kitti/">KITTI</a> → <a href="https://www.cityscapes-dataset.com/">Cityscapes</a></a></h5>
+            <div id="results-carousel_COCO" class="carousel results-carousel">
+                <div class="card">
+                    <div class="card-image">
+                        <img src="images/k1.jpg" alt="s1" />
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image">
+                        <img src="images/k2.jpg" alt="s2" />
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image">
+                        <img src="images/k3.jpg" alt="s3" />
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image">
+                        <img src="images/k4.jpg" alt="s4" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End image carousel -->
+
+<!-- Image carousel -->
+<section class="hero is-small">
+    <div class="hero-body">
+        <div class="container">
+            <h3 class="title is-3"> Adverse weather adaptation</h3>
+            <h5 class="title is-5"><a href="https://paperswithcode.com/dataset/foggy-cityscapes">Foggy Cityscapes</a> → <a href="https://www.cityscapes-dataset.com/">Cityscapes</a></a></h5>
+            <div id="results-carousel_COCO" class="carousel results-carousel">
+                <div class="card">
+                    <div class="card-image">
+                        <img src="images/f1.jpg" alt="s1" />
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image">
+                        <img src="images/f2.jpg" alt="s2" />
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image">
+                        <img src="images/f3.jpg" alt="s3" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End image carousel -->
+
 
 
 
@@ -217,6 +400,15 @@
 <!-- Statcounter tracking code -->
   
 <!-- You can add a tracker to track page visits by creating an account at statcounter.com -->
+    <script src="https://cdn.jsdelivr.net/npm/bulma-carousel@4.0.3/dist/js/bulma-carousel.min.js"></script>
+    <script>
+        bulmaCarousel.attach('#results-carousel_COCO', {
+            slidesToScroll: 1,
+            slidesToShow: 1,
+            infinite: true,
+            autoplay: false,
+        });
+    </script>
 
 
   </body>
