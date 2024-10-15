@@ -46,10 +46,36 @@
   <script src="static/js/bulma-slider.min.js"></script>
   <script src="static/js/index.js"></script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        MAXBUFFER: 10240, // Increase buffer size
+        macros: {
+          La: "\\mathcal{L}",
+          Lb: "\\pazocal{L}"
+        }
+      }
+    };
+  </script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script type="text/javascript">
+    MathJax = {
+      tex: {
+        MAXBUFFER: 10240, // Increase buffer size
+        macros: {
+          La: "\\mathcal{L}",
+          Lb: "\\pazocal{L}"
+        }
+      }
+    };
+  </script>
 
 
-</head>
+
+
+
+
 
 <body>
 
@@ -158,18 +184,16 @@
 <section class="hero is-small">
         <div class="hero-body">
             <div class="container ">
-                <h2 class="title is-3">Method overview</h2>
+                <h2 class="title is-3">Method </h2>
                 <h2 class="title is-5">Model architecture</h2>
-                Our model learns to decompose the input image \( x\) into
-                foreground and background regions. We adopt an encoder-decoder architecture where
-                the encoder \( E_B\) acts as a feature extractor, and generates image representations of lower dimensionality. We decompose our decoder into two components: a content generator \( G_C\) that
-                generates multiple image content maps and an attention generator \( G_A\) that outputs attention masks. The translated image \( G_x\) is recovered as:
+
+                <p>We introduce an inductive prior that optimises object instance appearance through spatial attention masks, effectively disentangling scenes into background and foreground regions. We adopt an encoder-decoder model where the encoder \(E_B\) acts as a feature extractor, generating an image representation of lower dimensionality.
+                    We decompose our decoder into two components: a content generator \(G_C\), producing a set of \(n\) content maps \( \{C_t \mid t \in [0, n-1]\} \), and an attention generator \(G_A\) producing a set of \(n+1\) attention maps \( \{A_t \mid t \in [0, n]\} \). The translated image \(G(\mathbf{x})\) is recovered as: </p>
 
                 <p>
                     \[
                     \begin{equation}
-                    %G(x)=\sum_{t=1}^{n} \underbrace{(C^{t} \odot A^{t})}_\textrm{weighted content}
-                    G(x)=\sum_{t=1}^{n} \underbrace{(C^{t} \odot A^{t})}_\textrm{foreground }
+                    G(\mathbf{x})=\sum_{t=1}^{n} \underbrace{(C^{t} \odot A^{t})}_\textrm{foreground }
                     +
                     \underbrace{(x \odot A^{n+1})}_\textrm{background}.
                     \label{eq:fb}
@@ -182,54 +206,40 @@
                     <img id="method_sliding" src="images/overview_camera_ready_2.jpg" width="800">
                 </div>
 
+
+                <h2 class="title is-5">Optimization</h2>
+                <div style="display: flex; justify-content: center;">
+                    <img id="equations" src="images/equations.png" width="400">
+                </div>
+                <p></p>
+
+                &nbsp
+                <ul style="list-style-type:circle;">
+                  <li> \( \La_{adv} \)  adversarial term   </li>
+                   <li> \( \La^{NCE} \) infoNCE loss on input and translated patches  </li>
+                </ul>
+                <p style="margin-bottom:1cm;">
                 <h2 class="title is-5">Local-global contrastive learning</h2>
-
-                <p>Our approach optimises the attention masks and identifies salient object regions by contrasting local-global information:</p>
-                <p>
-                    \[
-                    \begin{equation}
-                    L_{GA}=  L^{NCE}_{g \leftarrow l}  + L^{NCE}_{l \leftarrow l} +  L^{NCE}_{g \leftarrow g}
-                     \end{equation}
-                    \]
+                <p>Our approach learns to represent objects by contrasting local-global information. We introduce multi-level supervision, directly on \(G_A\) features:</p>
+                <p style="margin-bottom:1cm;">
+                <div style="display: flex; justify-content: center;">
+                    <img id="equations" src="images/local-global.png" width="400">
+                </div>
                 </p>
-                <p>
-                &nbsp;
-                <ul>
-                  <li>(i) \( L^{NCE}_{g \leftarrow l}\)  encourages  local representations of an image to be closer to the global representation of the same image</li>
-                  <li> (iii) \( L^{NCE}_{g \leftarrow g}\) pulls the global representations of an image’s distinct augmentations close to one another</li>
-                 <li> (ii) \( L^{NCE}_{l \leftarrow l}\) encourages local representations of an image to be close to one another</li>
-
-                </ul>
-
-
                 </p>
-               <!--
-                &nbsp;
-                &nbsp;
-                <p>
-                </p>
-                <p>
-
-                The full optimisation objective can be expressed as follows:
-                <p>
-                    \[
-                    \begin{equation}
-                    L_{G}=L^{NCE} + L_{adv} + L_{GA}
-                     \end{equation}
-                    \]
-                </p>
-                &nbsp;
-                <ul>
-                  <li>(iv) \( L^{NCE}\),  a patchwise contrastive loss which maximizes mutual information between corresponding input and output patches</li>
-                  <li> (v)  \( L_{adv}\), an adversarial loss, ensuring that the translated output matches the appearance of the target domain. </li>
+                <p style="margin-bottom:1cm;">
+                <ul style="list-style-type:circle;">
+                  <li> \( g \rightarrow g \) loss term between \(  \mathit{global}  \) representations of \(\mathbf{x}\) </li>
+                   <li>\( l \rightarrow l \) , \( l \rightarrow g \)  terms considering \(  \mathit{local}-\mathit{local}  \)  and \(  \mathit{local}-\mathit{global}  \) representations of \(\mathbf{x}\)   </li>
+                   <li> for network layers \( L \); layer contribution weights \( w_{i} \)</li>
                 </ul>
                 </p>
-                 -->
-
+                <p></p>
             </div>
-             -->
+
         </div>
-    </section>
+</section>
+
 
 <!-- Image carousel -->
 <section class="hero is-small">
@@ -262,6 +272,45 @@
     </div>
 </section>
 <!-- End image carousel -->
+
+
+<section class="hero is-small">
+        <div class="hero-body">
+            <div class="container ">
+                <h2 class="title is-3">Experimental results </h2>
+                <p style="margin-bottom:1cm;">
+                <div style="display: flex; justify-content: center;">
+                    <img id="method_sliding" src="images/table_foggy.png" width="800">
+                </div>
+                </p>
+                <p style="margin-bottom:1cm;">
+                <div style="display: flex; justify-content: center;">
+                    <img id="method_sliding" src="images/table_sim_kitti.png" width="800">
+                </div>
+                </p>
+
+</section>
+
+
+<section class="hero is-small">
+        <div class="hero-body">
+            <div class="container ">
+                <h2 class="title is-3">Ablative studies </h2>
+                <p style="margin-bottom:1cm;">
+                <div style="display: flex; justify-content: center;">
+                    <img id="method_sliding" src="images/ablation1.png" width="800">
+                </div>
+                </p>
+                <p style="margin-bottom:1cm;">
+                <div style="display: flex; justify-content: center;">
+                    <img id="method_sliding" src="images/ablation2.png" width="800">
+                </div>
+                </p>
+
+</section>
+
+
+
 
 <!-- Image carousel -->
 <section class="hero is-small">
@@ -404,7 +453,7 @@
     <script>
         bulmaCarousel.attach('#results-carousel_COCO', {
             slidesToScroll: 1,
-            slidesToShow: 1,
+            slidesToShow: 2,
             infinite: true,
             autoplay: false,
         });
